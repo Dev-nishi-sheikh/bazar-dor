@@ -37,6 +37,19 @@ export const auth = betterAuth({
     minPasswordLength: 8,
     maxPasswordLength: 128,
   },
+  session: {
+    // Keep the signed-in session inside a signed cookie for as long as the
+    // session itself lives. Serverless hosts (Vercel) run every route in its
+    // own function with a separate, ephemeral /tmp folder, so a database-only
+    // session written by /api/auth is invisible to the page that renders
+    // /product/[slug] or /profile and those pages bounce back to /signin.
+    // The cookie is HMAC-signed with BETTER_AUTH_SECRET, so the page can
+    // validate it without touching the database.
+    cookieCache: {
+      enabled: true,
+      maxAge: 60 * 60 * 24 * 7,
+    },
+  },
   account: {
     accountLinking: {
       enabled: true,

@@ -104,6 +104,8 @@ npm run db:push       # Push the Drizzle schema to the configured database
 5. Add the production OAuth callback URLs to Google/GitHub if you enable social login.
 
 > **Note:** Vercel's filesystem is ephemeral. Without Turso (or another remote libSQL database), accounts created on a deployment will not persist across cold starts. Use Turso for any real deployment.
+>
+> **Why protected pages used to bounce back to `/signin` on Vercel:** every route runs in its own serverless function with a separate `/tmp`, so a session saved in `/api/auth` was invisible to the function rendering `/product/[slug]` or `/profile`. Better Auth now caches the signed session in a signed cookie (`session.cookieCache` in `lib/auth.ts`), so those pages validate the session without reading the local database. Signing in and browsing now works without Turso; set `TURSO_DATABASE_URL` + `TURSO_AUTH_TOKEN` if accounts must survive cold starts and redeploys.
 
 ## 📁 Project Structure
 
